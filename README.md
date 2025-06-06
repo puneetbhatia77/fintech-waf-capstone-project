@@ -48,12 +48,11 @@ SELECT * FROM applications;
 -----------------------------------------------
 ## Run flask app using dockerfile
 
-docker build -t fintech_app:V4 .
-docker run --env-file .env -p 5000:5000 fintech_app:V4
-or
+docker build -t fintech-waf:v2 .
+
 #### To register new user, run docker command with "host.docker.internal" user instead of localhost
 
-docker run -e 'DB_URL="postgresql://username:password@host.docker.internal:5432/fintechdb:V4"' -p 5000:5000 fintech_app:V4
+docker run -e 'DATABASE_URL="postgresql://postgres:Word2Vec@host.docker.internal:5432/fintechdb"' -p 5000:5000 fintech-waf:v2
 
 
 
