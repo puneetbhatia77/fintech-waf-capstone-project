@@ -1,0 +1,41 @@
+name: Build and Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build and push Docker image
+      uses: azure/docker-login@v1
+      with:
+        login-server: fintechacr.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - run: |
+        docker build -t fintechacr.azurecr.io/fintech-api:latest ./fintech_app
+        docker push fintechacr.azurecr.io/fintech-api:latest
+
+    - name: Set AKS context
+      uses: azure/aks-set-context@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        cluster-name: fintech-aks
+        resource-group: fintech-rg
+
+    - name: Deploy via kubectl
+      run: |
+        kubectl apply -f fintech_infra/helm/k8s-api-deployment.yaml

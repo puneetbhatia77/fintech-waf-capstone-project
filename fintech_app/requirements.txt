@@ -1,0 +1,5 @@
+flask
+psycopg2-binary
+pandas
+scikit-learn
+apache-airflow==2.7.3
